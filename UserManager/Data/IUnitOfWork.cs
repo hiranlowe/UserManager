@@ -2,9 +2,9 @@
 using UserManager.Data.Repositories;
 
 namespace UserManager.Data;
-public interface IUnitOfWork : IDisposable
+public interface IUnitOfWork
 {
     IRepository<User> Users { get; }
     IRepository<Order> Orders { get; }
-    void Commit();
+    Task SaveAsync();
 }

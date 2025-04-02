@@ -4,17 +4,17 @@ using UserManager.Data.Repositories;
 namespace UserManager.Data;
 public class UnitOfWork : IUnitOfWork
 {
+    private readonly InMemoryDatabase _database;
+
     public IRepository<User> Users { get; }
     public IRepository<Order> Orders { get; }
 
-    public UnitOfWork()
+    public UnitOfWork(InMemoryDatabase database)
     {
-        this.Users = new QueueRepository<User>();
-        this.Orders = new QueueRepository<Order>();
+        this._database = database;
+        this.Users = new Repository<User>(this._database.Users);
+        this.Orders = new Repository<Order>(this._database.Orders);
     }
 
-    public void Commit()
-    {
-        Console.WriteLine("All operations committed.");
-    }
+    public Task SaveAsync() => Task.CompletedTask; // No actual save needed for in-memory lists
 }

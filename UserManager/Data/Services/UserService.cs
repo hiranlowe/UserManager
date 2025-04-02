@@ -3,23 +3,25 @@
 namespace UserManager.Data.Services;
 public class UserService
 {
-    private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public UserService(IUnitOfWorkFactory unitOfWorkFactory)
+    public UserService(IUnitOfWork unitOfWork)
     {
-        this._unitOfWorkFactory = unitOfWorkFactory;
+        this._unitOfWork = unitOfWork;
     }
 
-    public void RegisterUserWithOrder()
+    public async Task AddUserAsync(int id, string name)
     {
-        using var unitOfWork = this._unitOfWorkFactory.Create();
+        var user = new User { Id = id, Name = name };
+        await this._unitOfWork.Users.AddAsync(user);
+        await this._unitOfWork.SaveAsync();
+    }
 
-        var user = new User { Name = "Alice", Email = "alice@example.com" };
-        unitOfWork.Users.Add(user);
-
-        var order = new Order { UserId = user.Id, TotalAmount = 99.99m };
-        unitOfWork.Orders.Add(order);
-
-        unitOfWork.Commit();
+    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    {
+        return await this._unitOfWork.Users.GetAllAsync();
     }
 }
+
+
+
